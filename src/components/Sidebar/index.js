@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext } from 'react'
 import {
   DataContainer,
   Divider,
@@ -10,14 +10,17 @@ import {
   Title,
   SubTitle,
 } from '../components'
+import {store} from '../../store';
 import FileReaderInput from 'react-file-reader-input'
 import csvtojson from 'csvtojson'
 
 export const Sidebar = () => {
-  const [fileName, setFileName] = useState('')
-  const [chemicals, setChemicals ] = useState({})
-  const [locations, setLocations ] = useState({})
+  const globalState = useContext(store);
+  const {dispatch} = globalState;
+  const {fileName, chemicals, locations} = globalState.state;
 
+  console.log(globalState);
+  
   const handleFileUpload = (e, results) => {
     results.forEach((result) => {
       // eslint-disable-next-line no-unused-vars
@@ -33,7 +36,9 @@ export const Sidebar = () => {
     reader.readAsText(file)
     reader.fileName = file.name
     reader.onload = loadHandler
-    setFileName(file.name)
+    dispatch({
+      type: 'filename', value: file.name
+    })
     reader.onerror = function () {
       alert('Unable to read ' + file.name)
     }
@@ -89,8 +94,12 @@ export const Sidebar = () => {
       chemicalsObject[chemical].push(record)
       chemicalsByLocation[location].push(record)
     }
-    setChemicals(chemicalsObject)
-    setLocations(chemicalsByLocation)
+    dispatch({
+      type: 'chemicals', value: chemicalsObject
+    })
+    dispatch({
+      type: 'location', value: chemicalsByLocation
+    })
   }
 
   return (
