@@ -12,8 +12,10 @@ const { Provider } = store;
 const StateProvider = ( { children } ) => {
   const [state, dispatch] = useReducer((state, action) => {
     const {type, value} = action;
-    state[type] = value;
-    return state;
+    return {
+      ...state,
+      [type]: value
+    }
   }, initialState);
 
   return <Provider value={{ state, dispatch }}>{children}</Provider>;

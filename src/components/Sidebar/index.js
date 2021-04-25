@@ -19,7 +19,7 @@ export const Sidebar = () => {
   const {dispatch} = globalState;
   const {fileName, chemicals, locations} = globalState.state;
 
-  console.log(globalState);
+  console.log('log form sidebar', globalState);
   
   const handleFileUpload = (e, results) => {
     results.forEach((result) => {
@@ -37,7 +37,7 @@ export const Sidebar = () => {
     reader.fileName = file.name
     reader.onload = loadHandler
     dispatch({
-      type: 'filename', value: file.name
+      type: 'fileName', value: file.name
     })
     reader.onerror = function () {
       alert('Unable to read ' + file.name)
@@ -98,8 +98,10 @@ export const Sidebar = () => {
       type: 'chemicals', value: chemicalsObject
     })
     dispatch({
-      type: 'location', value: chemicalsByLocation
+      type: 'locations', value: chemicalsByLocation
     })
+
+    console.log('received state', globalState)
   }
 
   return (
