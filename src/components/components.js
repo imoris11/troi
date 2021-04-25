@@ -9,6 +9,9 @@ const Row = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 1px;
+  background-color: ${(props) => (props.active ? 'green' : 'none')};
+  color: ${(props) => (props.active ? 'white' : 'black')};
 `
 const Text = styled.p`
   padding: 0px;

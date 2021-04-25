@@ -10,17 +10,15 @@ import {
   Title,
   SubTitle,
 } from '../components'
-import {store} from '../../store';
+import { store } from '../../store'
 import FileReaderInput from 'react-file-reader-input'
 import csvtojson from 'csvtojson'
 
 export const Sidebar = () => {
-  const globalState = useContext(store);
-  const {dispatch} = globalState;
-  const {fileName, chemicals, locations} = globalState.state;
+  const globalState = useContext(store)
+  const { dispatch } = globalState
+  const { fileName, chemicals, locations, selectedChemical } = globalState.state
 
-  console.log('log form sidebar', globalState);
-  
   const handleFileUpload = (e, results) => {
     results.forEach((result) => {
       // eslint-disable-next-line no-unused-vars
@@ -37,7 +35,8 @@ export const Sidebar = () => {
     reader.fileName = file.name
     reader.onload = loadHandler
     dispatch({
-      type: 'fileName', value: file.name
+      type: 'fileName',
+      value: file.name,
     })
     reader.onerror = function () {
       alert('Unable to read ' + file.name)
@@ -57,51 +56,68 @@ export const Sidebar = () => {
   }
 
   const processRecords = (records) => {
-    console.log("Processing Records")
     let chemicalsObject = {}
     let chemicalsByLocation = {}
-    for(let i=0; i<records.length; i++) {
+    for (let i = 0; i < records.length; i++) {
       const record = records[i]
       let chemical = record['Measure']
       let location = record['location']
-      const date = record['Sample date']
-      const dateArray = date.split("-")
-      const monthsMap ={
-          "Jan":"01",
-          "Feb":"02",
-          "Mar":"03",
-          "Apr":"04",
-          "May":"05",
-          "Jun":"06",
-          "Jul":"07",
-          "Aug":"08",
-          "Sep":"09",
-          "Oct":"10",
-          "Nov":"11",
-          "Dec":"12"
-      }
-      const year = Number(dateArray[2]) >=90 ? `19${dateArray[2]}` :  `20${dateArray[2]}`
 
-      const newDate = year +'-'+ monthsMap[dateArray[1]] +'-'+dateArray[0]
-      record['Sample date'] = newDate
-
-      if(!chemicalsByLocation[location]) {
+      if (!chemicalsByLocation[location]) {
         chemicalsByLocation[location] = []
       }
-      if(!chemicalsObject[chemical]) {
+      if (!chemicalsObject[chemical]) {
         chemicalsObject[chemical] = []
       }
       chemicalsObject[chemical].push(record)
       chemicalsByLocation[location].push(record)
     }
     dispatch({
-      type: 'chemicals', value: chemicalsObject
+      type: 'chemicals',
+      value: chemicalsObject,
     })
     dispatch({
-      type: 'locations', value: chemicalsByLocation
+      type: 'locations',
+      value: chemicalsByLocation,
+    })
+  }
+
+  const filterByLocation = (records) => {
+    let chemicalsByLocation = {}
+    let max = Number(records[0].Value)
+    let min = Number(records[0].Value)
+
+    for (let i = 0; i < records.length; i++) {
+      const record = records[i]
+      let location = record['location']
+
+      if (Number(record['Value']) > max) max = Number(record['Value'])
+      if (Number(record['Value']) < min) min = Number(record['Value'])
+
+      if (!chemicalsByLocation[location]) {
+        chemicalsByLocation[location] = []
+      }
+      chemicalsByLocation[location].push(record)
+    }
+
+    dispatch({
+      type: 'range',
+      value: { max, min },
     })
 
-    console.log('received state', globalState)
+    dispatch({
+      type: 'locations',
+      value: chemicalsByLocation,
+    })
+  }
+
+  const handleApplyChemical = (chemical) => {
+    dispatch({
+      type: 'selectedChemical',
+      value: chemical,
+    })
+    const chemicalBeingViewed = chemicals[chemical]
+    filterByLocation(chemicalBeingViewed)
   }
 
   return (
@@ -125,20 +141,25 @@ export const Sidebar = () => {
       <Divider />
       <Content>
         <SubTitle>Locations</SubTitle>
-        {Object.keys(locations).map((location)=>
+        {Object.keys(locations).map((location) => (
           <Row key={location}>
-          <Text>{location}</Text>
-          <TextSmall>{locations[location].length}</TextSmall>
-        </Row>
-        )}
+            <Text>{location}</Text>
+            <TextSmall>{locations[location].length}</TextSmall>
+          </Row>
+        ))}
 
         <SubTitle>Chemicals</SubTitle>
-        {Object.keys(chemicals).map((key)=>
-         <Row key={key}>
-          <Text>{key}</Text>
-          <TextSmall>{chemicals[key].length}</TextSmall>
-       </Row>
-        )}
+        {Object.keys(chemicals).map((key) => (
+          <Row
+            active={selectedChemical === key}
+            style={{ cursor: 'pointer' }}
+            onClick={() => handleApplyChemical(key)}
+            key={key}
+          >
+            <Text>{key}</Text>
+            <TextSmall>{chemicals[key].length}</TextSmall>
+          </Row>
+        ))}
       </Content>
     </Container>
   )

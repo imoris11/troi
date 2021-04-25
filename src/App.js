@@ -1,5 +1,5 @@
 import { Layout } from './Layout'
-import { StateProvider } from './store';
+import { StateProvider } from './store'
 
 function App() {
   return (
@@ -11,4 +11,4 @@ function App() {
   )
 }
 
-export default App;
+export default App
