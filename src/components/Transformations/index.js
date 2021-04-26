@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Text, Title } from '../components'
 import styled from 'styled-components'
+import { store, TimePeriod } from '../../store'
 
 const Box = styled.div`
   border: 1px solid ${(props) => (props.active ? 'white' : 'grey')};
@@ -27,15 +28,23 @@ const Container = styled.div`
   width: 200px;
 `
 export const Transformations = () => {
+  const globalState = useContext(store)
+  const { dispatch } = globalState
+  const { timePeriod } = globalState.state;
+
+  const handleTimePeriodChange = (input) => {
+    dispatch({
+      type: 'timePeriod',
+      value: input
+    })
+  }
+  
   return (
     <Container>
       <Title>Time Period</Title>
-      <Box active>
-        <Text>Daily</Text>
-      </Box>
-      <Box>Weekly</Box>
-      <Box>Monthly</Box>
-      <Box>Yearly</Box>
+      <Box active={timePeriod === TimePeriod.ALL} onClick={() => handleTimePeriodChange(TimePeriod.ALL)}>All</Box>
+      <Box active={timePeriod === TimePeriod.MONTHLY} onClick={() => handleTimePeriodChange(TimePeriod.MONTHLY)}>Monthly</Box>
+      <Box active={timePeriod === TimePeriod.YEARLY} onClick={() => handleTimePeriodChange(TimePeriod.YEARLY)}>Yearly</Box>
       <Title>Transformations</Title>
       <Tag active>
         <Text>Boonsri</Text>
