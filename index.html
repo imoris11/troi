@@ -1,0 +1,147 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>LUCAS GREBE</title>
+		<style type="text/css">
+			
+			.axis path,
+			.axis line {
+				fill: none;
+				stroke: black;
+				shape-rendering: crispEdges;
+			}
+			
+			.axis text {
+				font-family: sans-serif;
+				font-size: 11px;
+			}
+
+		</style>
+
+        <script type="text/javascript" src="d3/d3.v3.js"></script>
+    </head>
+    <body>
+  <script type="text/javascript">
+		//Width and height
+			var w = 500;
+			var h = 500;
+			var padding = 20;
+			
+		
+						//Create SVG element
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", 500)
+						.attr("height", 500);
+								var dataset = [];
+for (var i = 0; i < 25; i++) {           //Loop 25 times
+    var newNumber = [Math.random() * 100, Math.random() * 100];  //New random number (0-30)
+    dataset.push(newNumber);             //Add new number to array
+}
+
+var xScale = d3.scale.linear()
+	.domain([0, d3.max(dataset, function(d) { return d[0]; })])
+	.range([padding, w - padding * 2]);
+var yScale = d3.scale.linear()
+	.domain([0, d3.max(dataset, function(d) { return d[1]; })])
+	.range([h - padding, padding]);				
+var size = d3.scale.linear()
+	.domain([0, d3.max(dataset, function(d) { return d[0]; })])
+	.range([0,55]);
+
+var arr = [901158,0.0253,'Kohsoom','23-Feb-08',"1,2,3-Trichlorobenzene",889162,0.001,'Boonsri','24-Jan-08',"1,2,3-Trichlorobenzene", 1326970,5.396,'Somchair','13-Jun-16','AGOC-3A', 911410,0.349,'Kannika','10-Jan-14','AGOC-3A', 710447,0.567,'Sakda','9-Nov-06','Alachlor', 698767,0.496,'Chai','15-Jul-06','Alachlor', 702572,0.198,'Busarakhan','13-Dec-06','Alachlor', 1967917,0.912,'Achara','15-Mar-12','Ammonium', 1338647,0.273,'Tansanee','7-Feb-10','Anionic active surfactants', 3283181,3.08,'Decha','17-Jul-16','Arsenic'];
+var id = [];
+var value = [];
+var loc = [];
+var date = [];
+var measure = [];
+var dat = [];
+var j = 0;
+for(var i = 0; i < arr.length; i++){
+index = (i % 5);
+if(index == 0){
+id.push(arr[i]);
+}
+if(index == 1){
+value.push(arr[i]);
+}
+if(index == 2){
+if(arr[i] == 'Kohsoom'){
+loc.push([370, 170]);
+}
+if(arr[i] == 'Boonsri'){
+loc.push([(275), (90)]);
+}
+if(arr[i] == 'Chai'){
+loc.push([300,225]);
+}
+if(arr[i] == 'Somchair'){
+loc.push([170,225]);
+}
+if(arr[i] == 'Kannika'){
+loc.push([325,350]);
+}
+if(arr[i] == 'Sakda'){
+loc.push([275,425]);
+}
+if(arr[i] == 'Busarakhan'){
+loc.push([370,200]);
+}
+if(arr[i] == 'Tansanee'){
+loc.push([175,340]);
+}
+if(arr[i] == 'Decha'){
+loc.push([75,275]);
+}
+if(arr[i] == 'Achara'){
+loc.push([200,150]);
+}
+}
+if(index == 3){
+date.push(arr[i]);
+}
+if(index == 4){
+measure.push(arr[i]);
+dat.push([arr[i-4], arr[i-3], loc[j], arr[i-1], arr[i]]);
+j++;
+}
+}
+alert(dat[0][1]);
+dat2 = dat.filter(x => x[3] == '23-Feb-08');
+alert(dat2);
+var text = svg.append('text').attr('text', 'This is a Test').attr('transform', 'translate('+50+','+50+')').attr('size', 500);
+var myimage = svg.append('image')
+    .attr('xlink:href', 'C:/temp/wf.jpg')
+    .attr('width', w)
+    .attr('height', h)
+			
+			var arc = d3.svg.symbol().type('circle').size(function(d){ if(d[1] * 100 < 500){if(d[1] < 10) return 50; return d[1] * 100; } return 600;});
+		var group = svg.append('g')
+					.attr('transform','translate('+ 0 +','+ 0 +')');
+
+var tempTest = group.selectAll('path')
+				.data(dat2)
+				.enter()
+				.append('path')
+				.attr('size', function(d){
+				return 500;
+				})
+				.attr('d',arc)
+				.attr('transform',function(d){ return "translate("+((d[2][0]))+","+((d[2][1]))+")"; })
+				.attr('fill', 'black');
+//var drag = d3.drag();
+var indices = [];
+var element = '1,2,3-Trichlorobenzene';
+var idx = measure.indexOf(element);
+while (idx != -1) {
+  indices.push(idx);
+  idx = measure.indexOf(element, idx + 1);
+}
+console.log(indices);
+// [0, 2, 4]
+        </script>
+    </body>
+</html>
