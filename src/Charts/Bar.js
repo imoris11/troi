@@ -239,6 +239,15 @@ const BarChart = () => {
     let group = svg.append('g').attr('transform', 'translate(' + 0 + ',' + 0 + ')')
 
     group
+      .selectAll('text')
+      .data(locationAndValues)
+      .enter()
+      .append('text')
+      .text((d) => d.value)
+      .attr('x', (d) => d.x + 5)
+      .attr('y', (d) => d.y - 5)
+
+    group
       .selectAll('path')
       .data(locationAndValues)
       .enter()
@@ -254,6 +263,7 @@ const BarChart = () => {
         return d.value > generalAverage ? 'red' : 'black'
       })
       .attr('opacity', 0.8)
+
     // eslint-disable-next-line
   }, [selectedData])
 
