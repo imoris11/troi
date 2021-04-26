@@ -4,7 +4,6 @@ import 'rc-slider/assets/index.css';
 import { store, TimePeriod, StateProvider } from '../store'
 
 import * as d3 from 'd3'
-import { select } from 'd3';
 
 const sliderContainer = {
   marginBottom: '20px',
@@ -40,6 +39,7 @@ const BarChart = () => {
 
     Object.entries(locations).forEach(([key, data]) => {
       data.forEach(d => {
+        // eslint-disable-next-line
         const [_, mo, yr] = (d['Sample date'] || ' - - ').split('-');
   
         if (timePeriod === TimePeriod.MONTHLY && years.includes(yr) && months.includes(mo)) {
