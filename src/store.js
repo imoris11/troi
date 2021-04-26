@@ -5,6 +5,7 @@ export const TimePeriod = {
   WEEKLY: 'weekly',
   MONTHLY: 'monthly',
   YEARLY: 'yearly',
+  DAILY: 'daily',
 }
 
 const initialState = {
@@ -14,7 +15,7 @@ const initialState = {
   timePeriod: TimePeriod.ALL,
   range: {
     min: null,
-    max: null
+    max: null,
   },
   selectedChemical: '',
 }

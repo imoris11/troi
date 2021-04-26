@@ -30,34 +30,56 @@ const Container = styled.div`
 export const Transformations = () => {
   const globalState = useContext(store)
   const { dispatch } = globalState
-  const { timePeriod } = globalState.state;
+  const { timePeriod, selectedChemical } = globalState.state
 
   const handleTimePeriodChange = (input) => {
     dispatch({
       type: 'timePeriod',
-      value: input
+      value: input,
     })
   }
-  
+
+  const handleRemoveChemical = () => {
+    dispatch({
+      type: 'selectedChemical',
+      value: null,
+    })
+  }
+
   return (
     <Container>
       <Title>Time Period</Title>
-      <Box active={timePeriod === TimePeriod.ALL} onClick={() => handleTimePeriodChange(TimePeriod.ALL)}>All</Box>
-      <Box active={timePeriod === TimePeriod.MONTHLY} onClick={() => handleTimePeriodChange(TimePeriod.MONTHLY)}>Monthly</Box>
-      <Box active={timePeriod === TimePeriod.YEARLY} onClick={() => handleTimePeriodChange(TimePeriod.YEARLY)}>Yearly</Box>
+      <Box
+        active={timePeriod === TimePeriod.ALL}
+        onClick={() => handleTimePeriodChange(TimePeriod.ALL)}
+      >
+        All
+      </Box>
+      <Box
+        active={timePeriod === TimePeriod.DAILY}
+        onClick={() => handleTimePeriodChange(TimePeriod.DAILY)}
+      >
+        Daily
+      </Box>
+      <Box
+        active={timePeriod === TimePeriod.MONTHLY}
+        onClick={() => handleTimePeriodChange(TimePeriod.MONTHLY)}
+      >
+        Monthly
+      </Box>
+      <Box
+        active={timePeriod === TimePeriod.YEARLY}
+        onClick={() => handleTimePeriodChange(TimePeriod.YEARLY)}
+      >
+        Yearly
+      </Box>
       <Title>Transformations</Title>
-      <Tag active>
-        <Text>Boonsri</Text>
-        <Text>X</Text>
-      </Tag>
-      <Tag active>
-        <Text>Atrazine</Text>
-        <Text>X</Text>
-      </Tag>
-      <Tag active>
-        <Text>{'>.03'}</Text>
-        <Text>X</Text>
-      </Tag>
+      {selectedChemical && (
+        <Tag onClick={handleRemoveChemical} active>
+          <Text>{selectedChemical}</Text>
+          <Text>X</Text>
+        </Tag>
+      )}
     </Container>
   )
 }

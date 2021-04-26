@@ -1,93 +1,176 @@
 import React, { useContext, useEffect, useState } from 'react'
-import Slider from 'rc-slider';
-import 'rc-slider/assets/index.css';
+import Slider from 'rc-slider'
+import 'rc-slider/assets/index.css'
 import { store, TimePeriod, StateProvider } from '../store'
 
 import * as d3 from 'd3'
 
 const sliderContainer = {
   marginBottom: '20px',
-  width: '600px'
+  width: '600px',
 }
 
 const coordinates = {
-  'Kohsoom': [590, 195],
-  'Boonsri': [470, 115],
-  'Chai': [520, 280],
-  'Somchair': [350, 260],
-  'Kannika': [545, 420],
-  'Sakda': [470, 510],
-  'Busarakhan': [590, 250],
-  'Tansanee': [350, 400],
-  'Decha': [240, 350],
-  'Achara': [402, 200]
+  Kohsoom: [590, 195],
+  Boonsri: [470, 115],
+  Chai: [520, 280],
+  Somchair: [350, 260],
+  Kannika: [545, 420],
+  Sakda: [470, 510],
+  Busarakhan: [590, 250],
+  Tansanee: [350, 400],
+  Decha: [240, 350],
+  Achara: [402, 200],
 }
 
-const years = ['98', '99', '00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16']
-const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jul', 'Jun', 'Aug', 'Sep', '0ct', 'Nov', 'Dec'];
+const years = [
+  '98',
+  '99',
+  '00',
+  '01',
+  '02',
+  '03',
+  '04',
+  '05',
+  '06',
+  '07',
+  '08',
+  '09',
+  '10',
+  '11',
+  '12',
+  '13',
+  '14',
+  '15',
+  '16',
+]
+const months = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jul',
+  'Jun',
+  'Aug',
+  'Sep',
+  '0ct',
+  'Nov',
+  'Dec',
+]
+const days = [
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '8',
+  '9',
+  '10',
+  '11',
+  '12',
+  '13',
+  '14',
+  '15',
+  '16',
+  '17',
+  '18',
+  '19',
+  '20',
+  '21',
+  '22',
+  '23',
+  '24',
+  '25',
+  '26',
+  '27',
+  '28',
+  '29',
+  '30',
+  '31',
+]
 
-const monthsYears = [];
-years.map(yr => months.map(mo => monthsYears.push(`${mo} ${yr}`)))
+const monthsYears = []
+years.map((yr) => months.map((mo) => monthsYears.push(`${mo} ${yr}`)))
 
 const BarChart = () => {
   const globalState = useContext(store)
-  const {locations, range, timePeriod} = globalState.state
-  const [sliderValue, setSliderValue] = useState(0);
+  const { locations, range, timePeriod, selectedChemical } = globalState.state
+  const [sliderValue, setSliderValue] = useState(0)
 
   const getGroupedData = () => {
-    let group = {};
-
+    let group = {}
     Object.entries(locations).forEach(([key, data]) => {
-      data.forEach(d => {
+      data.forEach((d) => {
         // eslint-disable-next-line
-        const [_, mo, yr] = (d['Sample date'] || ' - - ').split('-');
-  
-        if (timePeriod === TimePeriod.MONTHLY && years.includes(yr) && months.includes(mo)) {
-          let timeKey = `${mo} ${yr}`;
-  
+        const [currentday, mo, yr] = (d['Sample date'] || ' - - ').split('-')
+
+        if (
+          timePeriod === TimePeriod.MONTHLY &&
+          years.includes(yr) &&
+          months.includes(mo)
+        ) {
+          let timeKey = `${mo} ${yr}`
+
           if (!group[timeKey]) {
-            group[timeKey] = {};
+            group[timeKey] = {}
           }
-  
-          if (Array.isArray(group[timeKey][key])){
-            group[timeKey][key].push(d);
+
+          if (Array.isArray(group[timeKey][key])) {
+            group[timeKey][key].push(d)
           } else {
             group[timeKey][key] = [d]
           }
-
-        } else if(timePeriod === TimePeriod.YEARLY && years.includes(yr)) {
+        } else if (timePeriod === TimePeriod.YEARLY && years.includes(yr)) {
           if (!group[yr]) {
             group[yr] = {}
           }
 
-          if (Array.isArray(group[yr][key])){
-            group[yr][key].push(d);
+          if (Array.isArray(group[yr][key])) {
+            group[yr][key].push(d)
           } else {
             group[yr][key] = [d]
+          }
+        } else if (timePeriod === TimePeriod.DAILY && days.includes(currentday)) {
+          if (!group[currentday]) {
+            group[currentday] = {}
+          }
+
+          if (Array.isArray(group[currentday][key])) {
+            group[currentday][key].push(d)
+          } else {
+            group[currentday][key] = [d]
           }
         }
       })
     })
 
-    return group;
+    return group
   }
-  
+
   const selectData = (sliderValue) => {
-    let data = getGroupedData();
+    let data = getGroupedData()
     if (data && timePeriod === TimePeriod.MONTHLY) {
-      return data[monthsYears[sliderValue]];
-    } else if (data && timePeriod === TimePeriod.YEARLY){
-      return data[years[sliderValue]];
+      return data[monthsYears[sliderValue]]
+    } else if (data && timePeriod === TimePeriod.YEARLY) {
+      return data[years[sliderValue]]
+    } else if (data && timePeriod === TimePeriod.DAILY) {
+      return data[days[sliderValue]]
     } else {
-      return locations;
+      return locations
     }
   }
 
   const getTimeText = () => {
     if (timePeriod === TimePeriod.MONTHLY) {
-      return monthsYears[sliderValue];
-    } else if (timePeriod === TimePeriod.YEARLY){
-      return 'Year of ' + years[sliderValue];
+      return monthsYears[sliderValue]
+    } else if (timePeriod === TimePeriod.YEARLY) {
+      return 'Year of ' + years[sliderValue]
+    } else if (timePeriod === TimePeriod.DAILY) {
+      return `Day: ${days[sliderValue]}`
     }
   }
 
@@ -97,13 +180,15 @@ const BarChart = () => {
 
   const getSliderMax = () => {
     if (timePeriod === TimePeriod.YEARLY) {
-      return years.length - 1;
+      return years.length - 1
+    } else if (timePeriod === TimePeriod.DAILY) {
+      return days.length - 1
     } else {
-      return years.length * months.length - 1;
+      return years.length * months.length - 1
     }
   }
 
-  const selectedData = selectData(sliderValue);
+  const selectedData = selectData(sliderValue)
 
   useEffect(() => {
     //map
@@ -114,17 +199,15 @@ const BarChart = () => {
       y = 0
 
     Object.entries(selectedData || {}).forEach(([location, records]) => {
-      x = coordinates[location][0];
-      y = coordinates[location][1];
-
-      let average = 0
-      records.forEach((chemical) => (average += Number(chemical.Value) || 0))
-      average = average / records.length
+      x = coordinates[location][0]
+      y = coordinates[location][1]
+      let maxValue = 0
+      records.forEach((chemical) => (maxValue = Math.max(chemical.Value, maxValue)))
       const data = {
         location,
         x,
         y,
-        value: average,
+        value: maxValue,
       }
 
       locationAndValues.push(data)
@@ -176,15 +259,25 @@ const BarChart = () => {
 
   return (
     <StateProvider>
-      <svg ref={myRef}></svg>
-      { timePeriod !== TimePeriod.ALL &&
+      {selectedChemical ? (
+        <svg ref={myRef}></svg>
+      ) : (
+        <h3>Upload File and Select a Chemical</h3>
+      )}
+      {timePeriod !== TimePeriod.ALL && (
         <>
           <div style={sliderContainer}>
-            <Slider min={0} max={getSliderMax()} included={false} value={sliderValue} onChange={(value) => setSliderValue(value)}/>
+            <Slider
+              min={0}
+              max={getSliderMax()}
+              included={false}
+              value={sliderValue}
+              onChange={(value) => setSliderValue(value)}
+            />
           </div>
           <div>{getTimeText()}</div>
         </>
-      }
+      )}
     </StateProvider>
   )
 }

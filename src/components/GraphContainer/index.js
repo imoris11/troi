@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import BarChart from '../../Charts/Bar'
 import styled from 'styled-components'
+import { store } from '../../store'
 
 const Row = styled.div`
   display: flex;
@@ -27,14 +28,18 @@ const Button = styled.button`
 `
 
 export const GraphContainer = () => {
+  const globalState = useContext(store)
+  const { selectedChemical } = globalState.state
   return (
     <Row>
       <BarChart />
-      <div style={{ flexDirection: 'row', display: 'flex' }}>
-        <Button primary>Time Series</Button>
-        <Button secondary>Anomaly Detection</Button>
-        <Button>Reset</Button>
-      </div>
+      {selectedChemical && (
+        <div style={{ flexDirection: 'row', display: 'flex' }}>
+          <Button primary>Time Series</Button>
+          <Button secondary>Anomaly Detection</Button>
+          <Button>Reset</Button>
+        </div>
+      )}
     </Row>
   )
 }
