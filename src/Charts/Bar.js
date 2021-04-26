@@ -1,14 +1,109 @@
-import React, { useContext, useEffect } from 'react'
-import { store, StateProvider } from '../store'
+import React, { useContext, useEffect, useState } from 'react'
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
+import { store, TimePeriod, StateProvider } from '../store'
+
 import * as d3 from 'd3'
+import { select } from 'd3';
+
+const sliderContainer = {
+  marginBottom: '20px',
+  width: '600px'
+}
+
+const coordinates = {
+  'Kohsoom': [590, 195],
+  'Boonsri': [470, 115],
+  'Chai': [520, 280],
+  'Somchair': [350, 260],
+  'Kannika': [545, 420],
+  'Sakda': [470, 510],
+  'Busarakhan': [590, 250],
+  'Tansanee': [350, 400],
+  'Decha': [240, 350],
+  'Achara': [402, 200]
+}
+
+const years = ['98', '99', '00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16']
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jul', 'Jun', 'Aug', 'Sep', '0ct', 'Nov', 'Dec'];
+
+const monthsYears = [];
+years.map(yr => months.map(mo => monthsYears.push(`${mo} ${yr}`)))
 
 const BarChart = () => {
   const globalState = useContext(store)
-  const { locations, range } = globalState.state
+  const {locations, range, timePeriod} = globalState.state
+  const [sliderValue, setSliderValue] = useState(0);
+
+  const getGroupedData = () => {
+    let group = {};
+
+    Object.entries(locations).forEach(([key, data]) => {
+      data.forEach(d => {
+        const [_, mo, yr] = (d['Sample date'] || ' - - ').split('-');
+  
+        if (timePeriod === TimePeriod.MONTHLY && years.includes(yr) && months.includes(mo)) {
+          let timeKey = `${mo} ${yr}`;
+  
+          if (!group[timeKey]) {
+            group[timeKey] = {};
+          }
+  
+          if (Array.isArray(group[timeKey][key])){
+            group[timeKey][key].push(d);
+          } else {
+            group[timeKey][key] = [d]
+          }
+
+        } else if(timePeriod === TimePeriod.YEARLY && years.includes(yr)) {
+          if (!group[yr]) {
+            group[yr] = {}
+          }
+
+          if (Array.isArray(group[yr][key])){
+            group[yr][key].push(d);
+          } else {
+            group[yr][key] = [d]
+          }
+        }
+      })
+    })
+
+    return group;
+  }
+  
+  const selectData = (sliderValue) => {
+    let data = getGroupedData();
+    if (data && timePeriod === TimePeriod.MONTHLY) {
+      return data[monthsYears[sliderValue]];
+    } else if (data && timePeriod === TimePeriod.YEARLY){
+      return data[years[sliderValue]];
+    } else {
+      return locations;
+    }
+  }
+
+  const getTimeText = () => {
+    if (timePeriod === TimePeriod.MONTHLY) {
+      return monthsYears[sliderValue];
+    } else if (timePeriod === TimePeriod.YEARLY){
+      return 'Year of ' + years[sliderValue];
+    }
+  }
 
   const myRef = React.createRef()
   const w = 900
   const h = 600
+
+  const getSliderMax = () => {
+    if (timePeriod === TimePeriod.YEARLY) {
+      return years.length - 1;
+    } else {
+      return years.length * months.length - 1;
+    }
+  }
+
+  const selectedData = selectData(sliderValue);
 
   useEffect(() => {
     //map
@@ -17,49 +112,10 @@ const BarChart = () => {
     const locationAndValues = []
     let x,
       y = 0
-    Object.keys(locations).forEach((location) => {
-      if (location === 'Kohsoom') {
-        x = 590
-        y = 195
-      }
-      if (location === 'Boonsri') {
-        x = 470
-        y = 115
-      }
-      if (location === 'Chai') {
-        x = 520
-        y = 280
-      }
-      if (location === 'Somchair') {
-        x = 350
-        y = 260
-      }
-      if (location === 'Kannika') {
-        x = 545
-        y = 420
-      }
-      if (location === 'Sakda') {
-        x = 470
-        y = 510
-      }
-      if (location === 'Busarakhan') {
-        x = 590
-        y = 250
-      }
-      if (location === 'Tansanee') {
-        x = 350
-        y = 400
-      }
-      if (location === 'Decha') {
-        x = 240
-        y = 350
-      }
-      if (location === 'Achara') {
-        x = 405
-        y = 200
-      }
 
-      const records = locations[location]
+    Object.entries(selectedData || {}).forEach(([location, records]) => {
+      x = coordinates[location][0];
+      y = coordinates[location][1];
 
       let average = 0
       records.forEach((chemical) => (average += Number(chemical.Value) || 0))
@@ -70,6 +126,7 @@ const BarChart = () => {
         y,
         value: average,
       }
+
       locationAndValues.push(data)
     })
 
@@ -95,6 +152,7 @@ const BarChart = () => {
       .size(function (d) {
         return sizeScale(d.value)
       })
+
     let group = svg.append('g').attr('transform', 'translate(' + 0 + ',' + 0 + ')')
 
     group
@@ -114,11 +172,19 @@ const BarChart = () => {
       })
       .attr('opacity', 0.8)
     // eslint-disable-next-line
-  }, [locations])
+  }, [selectedData])
 
   return (
     <StateProvider>
       <svg ref={myRef}></svg>
+      { timePeriod !== TimePeriod.ALL &&
+        <>
+          <div style={sliderContainer}>
+            <Slider min={0} max={getSliderMax()} included={false} value={sliderValue} onChange={(value) => setSliderValue(value)}/>
+          </div>
+          <div>{getTimeText()}</div>
+        </>
+      }
     </StateProvider>
   )
 }

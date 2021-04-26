@@ -1,9 +1,22 @@
 import React, { createContext, useReducer } from 'react'
 
+export const TimePeriod = {
+  ALL: 'all',
+  WEEKLY: 'weekly',
+  MONTHLY: 'monthly',
+  YEARLY: 'yearly',
+}
+
 const initialState = {
   fileName: '',
   chemicals: {},
   locations: {},
+  timePeriod: TimePeriod.ALL,
+  range: {
+    min: null,
+    max: null
+  },
+  selectedChemical: '',
 }
 
 const store = createContext(initialState)
