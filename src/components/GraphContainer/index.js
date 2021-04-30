@@ -1,7 +1,9 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import BarChart from '../../Charts/Bar'
+import AnomalyScatter from '../../Charts/AnomalyScatter'
 import styled from 'styled-components'
-import { store } from '../../store'
+import { store, ChemicalsWithAnomaliesDetected } from '../../store'
+import AnomalyModal from '../AnomalyDetectionModal'
 
 const Row = styled.div`
   display: flex;
@@ -13,12 +15,12 @@ const Row = styled.div`
   marginright: 10px;
 `
 
-const Button = styled.button`
+export const Button = styled.button`
   padding: 10px;
   margin: 5px;
   border-radius: 5px;
   font-weight: 600;
-  border: 1px solid grey;
+  border: 1px solid white;
   color: ${(props) => (props.primary || props.secondary ? '#fff' : '#000')};
   background-color: ${(props) =>
     props.primary ? '#8E6262' : props.secondary ? '#399700' : '#fff'};
@@ -29,17 +31,32 @@ const Button = styled.button`
 
 export const GraphContainer = () => {
   const globalState = useContext(store)
-  const { selectedChemical } = globalState.state
+  const { dispatch } = globalState
+  const { selectedChemical, current_view } = globalState.state
+  const [modalIsOpen, setIsOpen] = useState(false)
+
+  const setTimeSeries = () => {
+    dispatch({
+      type: 'current_view',
+      value: 'time_series',
+    })
+  }
   return (
     <Row>
-      <BarChart />
+      {current_view === 'anomaly_detection' ? <AnomalyScatter /> : <BarChart />}
       {selectedChemical && (
         <div style={{ flexDirection: 'row', display: 'flex' }}>
-          <Button primary>Time Series</Button>
-          <Button secondary>Anomaly Detection</Button>
-          <Button>Reset</Button>
+          <Button onClick={setTimeSeries} primary>
+            Time Series
+          </Button>
+          {ChemicalsWithAnomaliesDetected.includes(selectedChemical) && (
+            <Button secondary onClick={() => setIsOpen(true)}>
+              Anomaly Detection
+            </Button>
+          )}
         </div>
       )}
+      <AnomalyModal modalIsOpen={modalIsOpen} setIsOpen={setIsOpen} />
     </Row>
   )
 }

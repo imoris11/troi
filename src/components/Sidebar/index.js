@@ -10,7 +10,7 @@ import {
   Title,
   SubTitle,
 } from '../components'
-import { store } from '../../store'
+import { store, ChemicalsWithAnomaliesDetected } from '../../store'
 import FileReaderInput from 'react-file-reader-input'
 import csvtojson from 'csvtojson'
 
@@ -113,6 +113,11 @@ export const Sidebar = () => {
 
   const handleApplyChemical = (chemical) => {
     dispatch({
+      type: 'current_view',
+      value: 'time_series',
+    })
+
+    dispatch({
       type: 'selectedChemical',
       value: chemical,
     })
@@ -152,12 +157,24 @@ export const Sidebar = () => {
         {Object.keys(chemicals).map((key) => (
           <Row
             active={selectedChemical === key}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', position: 'relative', padding: 5 }}
             onClick={() => handleApplyChemical(key)}
             key={key}
           >
             <Text>{key}</Text>
             <TextSmall>{chemicals[key].length}</TextSmall>
+            <TextSmall
+              style={{
+                position: 'absolute',
+                top: 18,
+                marginTop: 5,
+                color: 'orange',
+                fontSize: 9,
+                fontWeight: '600',
+              }}
+            >
+              {ChemicalsWithAnomaliesDetected.includes(key) ? 'AD Enabled' : ''}
+            </TextSmall>
           </Row>
         ))}
       </Content>

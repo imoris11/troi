@@ -7,6 +7,14 @@ export const TimePeriod = {
   YEARLY: 'yearly',
   DAILY: 'daily',
 }
+export const ChemicalsWithAnomaliesDetected = [
+  'Atrazine',
+  'Copper',
+  'Iron',
+  'Manganese',
+  'Methylosmoline',
+  'Water Temperature',
+]
 
 const initialState = {
   fileName: '',
