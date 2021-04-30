@@ -102,7 +102,7 @@ const DOC_IDS = {
     Sakda: '17iV0NfOGmHFcOtUzhS2MsZZHJsy8aIV_9HdAbLxQXDI',
     Somchair: '1VWpCEHkIe-J_iu_MHbVW00JNJZcBsN7o8nR6ejbYlvU',
   },
-  'Water Temperature': {
+  'Water temperature': {
     All: '1iZXNx3uK0NeG9UNRCIgHe4COtxcyWFbtr_mBcwaGrgU',
     Achara: '12eRyT6eoawiQm-yRkx-bCEVYBSCky3iibcYbTDubl7o',
     Boonsri: '1oo8mmHR9LI2ArmCVbSWLctjw18l7rB_mTJP4WBxyUWM',

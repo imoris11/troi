@@ -17,7 +17,7 @@ import csvtojson from 'csvtojson'
 export const Sidebar = () => {
   const globalState = useContext(store)
   const { dispatch } = globalState
-  const { fileName, chemicals, locations, selectedChemical } = globalState.state
+  const { fileName, chemicals, selectedChemical } = globalState.state
 
   const handleFileUpload = (e, results) => {
     results.forEach((result) => {
@@ -145,13 +145,13 @@ export const Sidebar = () => {
       <Title>Categories</Title>
       <Divider />
       <Content>
-        <SubTitle>Locations</SubTitle>
+        {/* <SubTitle>Locations</SubTitle>
         {Object.keys(locations).map((location) => (
           <Row key={location}>
             <Text>{location}</Text>
             <TextSmall>{locations[location].length}</TextSmall>
           </Row>
-        ))}
+        ))} */}
 
         <SubTitle>Chemicals</SubTitle>
         {Object.keys(chemicals).map((key) => (

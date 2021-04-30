@@ -13,7 +13,7 @@ export const ChemicalsWithAnomaliesDetected = [
   'Iron',
   'Manganese',
   'Methylosmoline',
-  'Water Temperature',
+  'Water temperature',
 ]
 
 const initialState = {
