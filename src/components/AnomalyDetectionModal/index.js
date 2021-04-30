@@ -121,7 +121,7 @@ const AnomalyModal = ({ modalIsOpen, setIsOpen }) => {
   const [state, setState] = useState({ location: '' })
   const globalState = useContext(store)
   const { dispatch } = globalState
-  const { locations, selectedChemical } = globalState.state
+  const { selectedChemical } = globalState.state
 
   let subtitle
 
