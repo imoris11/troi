@@ -272,7 +272,10 @@ const BarChart = () => {
       {selectedChemical ? (
         <svg ref={myRef}></svg>
       ) : (
+        <>
         <h3>Upload File and Select a Chemical</h3>
+        <a  rel="noreferrer" target="_blank" href="https://drive.google.com/file/d/11i7UZ26k75jt3_ad414D0lEG-dr5D6vO/view?usp=sharing"> Download Data Set</a>
+        </>
       )}
       {timePeriod !== TimePeriod.ALL && (
         <>
